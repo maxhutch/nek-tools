@@ -2,6 +2,7 @@
 from sys import argv
 from os import system
 from os import path
+import shutil
 import argparse
 import json
 
@@ -36,6 +37,7 @@ locals().update(config)
 
 # Manipulate the configuration here
 elements_total = shape_mesh[0] * shape_mesh[1] * shape_mesh[2]
+
 if args.np > 0: 
   procs = args.np
 
@@ -65,12 +67,19 @@ box = box_template.format(**config)
 with open("./tmp.box", "w") as f:
   f.write(box)
 
-system("echo 'tmp.box' | genbox")
-system("mv box.rea "+args.name+".rea")
-system("mv box.re2 "+args.name+".re2")
-system("echo '"+args.name+"' | genmap")
 if args.usr != None:
-  system("cp "+ args.usr + " "+args.name+".usr")
+  with open(args.usr, "r") as f:
+    usr_template = f.read()
+  usr = usr_template.format(**config)
+  with open(args.name + ".usr", "w") as f:
+    f.write(usr)
+
+system("echo 'tmp.box' | genbox")
+shutil.copy("box.rea", args.name+".rea")
+shutil.copy("box.re2", args.name+".re2")
+with open(".tmp", "w") as f:
+  f.write(args.name + "\n0.05\n")
+system("genmap < .tmp")
 system("makenek clean")
 system("makenek "+args.name)
 
