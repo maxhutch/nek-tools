@@ -31,15 +31,14 @@
   "dim": 3, 
   "io_time": 1.0, 
   "shape_mesh": [
-    64, 
-    64, 
-    16
+    4, 
+    4, 
+    4 
   ], 
   "end_time": 0, 
   "uservp": 0, 
   "rho_cp": 1000.0,
   "order": 8,
   "dealiasing_order" : 12,
-  "elements_total" : 128,
   "procs" : 4
 }
