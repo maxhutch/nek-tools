@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 from sys import argv
+from os import system
 import json
 
 with open("./default.json", "r") as f:
@@ -12,6 +13,13 @@ if len(argv) > 1:
     print("Loaded config")
 
 config = dict(list(default_config.items()) + list(loaded_config.items()))
+
+with open("./template.SIZE", "r") as f:
+  size_template = f.read()
+size = size_template.format(**config)
+
+with open("./SIZE", "w") as f:
+  f.write(size)
 
 with open("./template.rea", "r") as f:
   rea_template = f.read()
@@ -29,4 +37,7 @@ with open("./tmp.box", "w") as f:
 
 with open("./test.json", "w") as f:
   json.dump(config, f, indent=2)
+
+system("echo 'tmp.box' | genbox")
+system("makenek box")
 
