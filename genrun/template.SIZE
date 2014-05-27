@@ -18,7 +18,7 @@ C
 
       parameter (lelg = {elements_total})
       parameter (lp = {procs})
-      parameter (lelt= lelg/lp, lelv=lelt)
+      parameter (lelt= (lelg + {procs} - 1)/lp, lelv=lelt)
 c
 c     parameter (lpelv=lelv,lpelt=lelt,lpert=3)  ! perturbation
 c     parameter (lpx1=lx1,lpy1=ly1,lpz1=lz1)     ! array sizes

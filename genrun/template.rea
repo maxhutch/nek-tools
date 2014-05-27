@@ -22,9 +22,9 @@
    0.500000E-01    p18 GRID
   -1.00000         p19 INTYPE
    7.0000          p20 NORDER
-   1.000000E-05    p21 DIVERGENCE
-   1.000000E-08    p22 HELMHOLTZ
-   0              p23 NPSCAL
+   0.000000E-05    p21 DIVERGENCE
+   0.000000E-08    p22 HELMHOLTZ
+   0               p23 NPSCAL
    0.100000E-01    p24 TOLREL
    0.100000E-01    p25 TOLABS
    {courant}       p26 COURANT/NTAU
