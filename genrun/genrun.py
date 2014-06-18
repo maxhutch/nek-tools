@@ -41,6 +41,31 @@ elements_total = shape_mesh[0] * shape_mesh[1] * shape_mesh[2]
 if args.np > 0: 
   procs = args.np
 
+if left_bound == 'P':
+  left_boundv = 'P'
+else:
+  left_boundv = 'I'
+if right_bound == 'P':
+  right_boundv = 'P'
+else:
+  right_boundv = 'I'
+if front_bound == 'P':
+  front_boundv = 'P'
+else:
+  front_boundv = 'I'
+if back_bound == 'P':
+  back_boundv = 'P'
+else:
+  back_boundv = 'I'
+if top_bound == 'P':
+  top_boundv = 'P'
+else:
+  top_boundv = 'I'
+if bottom_bound == 'P':
+  bottom_boundv = 'P'
+else:
+  bottom_boundv = 'I'
+
 # writes the current variable scope to the configuration
 config = locals()
 
@@ -76,7 +101,7 @@ if args.usr != None:
 
 system("echo 'tmp.box' | genbox")
 shutil.copy("box.rea", args.name+".rea")
-shutil.copy("box.re2", args.name+".re2")
+#shutil.copy("box.re2", args.name+".re2")
 with open(".tmp", "w") as f:
   f.write(args.name + "\n0.05\n")
 system("genmap < .tmp")
