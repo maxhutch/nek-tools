@@ -75,7 +75,7 @@ with open(path.join(mypath, "template.SIZE"), "r") as f:
   size_template = f.read()
 size = size_template.format(**config)
 
-with open("./SIZE", "w") as f:
+with open("./size_mod.F90", "w") as f:
   f.write(size)
 
 with open(path.join(mypath, "template.rea"), "r") as f:
