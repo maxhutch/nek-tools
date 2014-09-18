@@ -13,6 +13,7 @@ parser.add_argument('name', help="Name to assign to generated system")
 parser.add_argument('-d', '--dict', dest='config', help="Dictionary of parametesr (JSON)")
 parser.add_argument('-u', '--usr', dest='usr', help="*.usr file to use for build")
 parser.add_argument('-n', '--nproc', dest='np', type=int, default=-1, help="Number of processes to target")
+parser.add_argument('-m', '--makenek', dest='makenek', default="makenek", help="Path to makenek")
 
 args = parser.parse_args()
 mypath = (path.realpath(__file__))[:-9]
@@ -74,7 +75,12 @@ config = locals()
 with open(path.join(mypath, "template.SIZE"), "r") as f:
   size_template = f.read()
 size = size_template.format(**config)
+with open("./SIZE", "w") as f:
+  f.write(size)
 
+with open(path.join(mypath, "template.size_mod"), "r") as f:
+  size_template = f.read()
+size = size_template.format(**config)
 with open("./size_mod.F90", "w") as f:
   f.write(size)
 
@@ -105,6 +111,6 @@ shutil.copy("box.rea", args.name+".rea")
 with open(".tmp", "w") as f:
   f.write(args.name + "\n0.05\n")
 system("genmap < .tmp")
-system("makenek clean")
-system("makenek "+args.name)
+system("{:s} clean".format(args.makenek))
+system("{:s} {:s}".format(args.makenek, args.name))
 
