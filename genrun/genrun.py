@@ -28,7 +28,7 @@ if args.config != None:
 
 config = dict(list(default_config.items()) + list(loaded_config.items()))
 
-with open("./test.json", "w") as f:
+with open("./{:s}.json".format(args.name), "w") as f:
   json.dump(config, f, indent=2)
 
 ''' Computing stuff '''
