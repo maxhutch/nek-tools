@@ -5,9 +5,9 @@ from os import path
 import shutil
 import argparse
 import json
+from mesh import Mesh
 
 ''' Loading stuff '''
-
 parser = argparse.ArgumentParser(description="Generate NEK inputs")
 parser.add_argument('name', help="Name to assign to generated system")
 parser.add_argument('-d', '--dict', dest='config', help="Dictionary of parametesr (JSON)")
@@ -46,26 +46,39 @@ if left_bound == 'P':
   left_boundv = 'P'
 else:
   left_boundv = 'I'
+
 if right_bound == 'P':
   right_boundv = 'P'
 else:
   right_boundv = 'I'
+
 if front_bound == 'P':
   front_boundv = 'P'
 else:
   front_boundv = 'I'
+
 if back_bound == 'P':
   back_boundv = 'P'
 else:
   back_boundv = 'I'
+
 if top_bound == 'P':
   top_boundv = 'P'
 else:
   top_boundv = 'I'
+
 if bottom_bound == 'P':
   bottom_boundv = 'P'
 else:
   bottom_boundv = 'I'
+
+# genbox and genmap
+msh = Mesh(root_mesh, extent_mesh, shape_mesh, [left_bound, front_bound, right_bound, back_bound, top_bound, bottom_bound])
+msh.generate_elements()
+mesh_data = msh.get_mesh_data()
+msh.generate_faces()
+fluid_boundaries = msh.get_fluid_boundaries()
+thermal_boundaries = fluid_boundaries.replace('SYM', 'I  ').replace('W  ', 'I  ')
 
 # writes the current variable scope to the configuration
 config = locals()
@@ -105,8 +118,8 @@ if args.usr != None:
   with open(args.name + ".usr", "w") as f:
     f.write(usr)
 
-system("echo 'tmp.box' | genbox")
-shutil.copy("box.rea", args.name+".rea")
+#system("echo 'tmp.box' | genbox")
+shutil.copy("tmp.rea", args.name+".rea")
 #shutil.copy("box.re2", args.name+".re2")
 with open(".tmp", "w") as f:
   f.write(args.name + "\n0.05\n")
