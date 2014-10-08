@@ -117,15 +117,19 @@ class Mesh:
 
   def get_mesh_data(self):
     import numpy as np
-    mesh = "{:d} {:d} {:d} NEL,NDIM,NELV".format(np.prod(self.n), 3, np.prod(self.n))
+    letters = [chr(97+i) for i in range(26)] + [chr(65+i) for i in range(26)]
+    mesh = " {:11d}  {:d} {:11d}           NEL,NDIM,NELV".format(np.prod(self.n), 3, np.prod(self.n))
     for e in range(self.elements.shape[0]):
-      mesh += "\n            ELEMENT {:11d} [    1a]  GROUP  0\n".format(e+1) 
+      ix = int((self.elements[e,0] - self.root[0])/self.delta[0])
+      iy = int((self.elements[e,4] - self.root[1])/self.delta[1])
+      iz = int((self.elements[e,8] - self.root[2])/self.delta[2])
+      mesh += "\n            ELEMENT {:11d} [{:5d}{:1s}]  GROUP  0\n".format(e+1, iz+1, letters[(ix+iy*self.n[0]) % 52]) 
       mesh += "  {: 8.5E}  {: 8.5E}  {: 8.5E}  {: 8.5E} \n".format(*(self.elements[e, 0: 4].tolist())) 
-      mesh += "  {:E}  {:E}  {:E}  {:E} \n".format(*(self.elements[e, 4: 8].tolist())) 
-      mesh += "  {:E}  {:E}  {:E}  {:E} \n".format(*(self.elements[e, 8:12].tolist())) 
-      mesh += "  {:E}  {:E}  {:E}  {:E} \n".format(*(self.elements[e,12:16].tolist())) 
-      mesh += "  {:E}  {:E}  {:E}  {:E} \n".format(*(self.elements[e,16:20].tolist())) 
-      mesh += "  {:E}  {:E}  {:E}  {:E} ".format(*(self.elements[e,20:24].tolist())) 
+      mesh += "  {: 8.5E}  {: 8.5E}  {: 8.5E}  {: 8.5E} \n".format(*(self.elements[e, 4: 8].tolist())) 
+      mesh += "  {: 8.5E}  {: 8.5E}  {: 8.5E}  {: 8.5E} \n".format(*(self.elements[e, 8:12].tolist())) 
+      mesh += "  {: 8.5E}  {: 8.5E}  {: 8.5E}  {: 8.5E} \n".format(*(self.elements[e,12:16].tolist())) 
+      mesh += "  {: 8.5E}  {: 8.5E}  {: 8.5E}  {: 8.5E} \n".format(*(self.elements[e,16:20].tolist())) 
+      mesh += "  {: 8.5E}  {: 8.5E}  {: 8.5E}  {: 8.5E} ".format(*(self.elements[e,20:24].tolist())) 
     return mesh
 
   def get_fluid_boundaries(self):
