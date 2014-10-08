@@ -1,4 +1,23 @@
 
+def factor(number):
+  factors = []
+  n = int(number)
+  test = 2
+  while n >= test:
+    if (n/test)*test == n:
+      n /= test
+      factors.insert(0,test)
+    else:
+      test += 1
+
+  if n != 1:
+    print("Something is up: ", number, factors)
+
+  return factors
+
+def get_ind(ix, iy, iz, n):
+  return 1 + (ix%n[0]) + (iy%n[1]) * n[0] + (iz%n[2]) * n[0] * n[1]
+
 class Mesh:
 
   def __init__(self, root, corner, n, boundaries):
@@ -13,6 +32,7 @@ class Mesh:
     self.faces = None
     self.element_bounds = None
     self.elements = None
+    self.map = None
     return
 
   def generate_elements(self):
@@ -140,4 +160,81 @@ class Mesh:
         fluid_boundary += " {:3s} {:d}   {:7.2f}        {:7f}       0.00000       0.00000       0.00000\n".format(
                             self.element_bounds[e*6+f], int(self.faces[e,f,0]), self.faces[e,f,1], opposite_face[f])
     return fluid_boundary[:-1]
+
+  def set_map(self):
+    import numpy as np
+    ind = np.zeros((np.prod(self.n), 4), dtype=np.uint32)
+    for e in range(self.elements.shape[0]):
+      ind[e,1] = int((self.elements[e,0] - self.root[0])/self.delta[0])
+      ind[e,2] = int((self.elements[e,4] - self.root[1])/self.delta[1])
+      ind[e,3] = int((self.elements[e,8] - self.root[2])/self.delta[2])
+
+    xfac = factor(self.n[0])
+    yfac = factor(self.n[0])
+    zfac = factor(self.n[0])
+    xytot = np.prod(np.array(xfac)) * np.prod(np.array(yfac))
+    xztot = np.prod(np.array(xfac)) * np.prod(np.array(zfac))
+    yztot = np.prod(np.array(yfac)) * np.prod(np.array(zfac))
+
+    while len(xfac) + len(yfac) + len(zfac) > 0:
+      print(ind[:,0])
+      print(ind[0:10,1:4])
+      if xytot < xztot and xytot < yztot:
+        split = zfac.pop(0)
+        print("Splitting z into", split)
+        remain = np.prod(np.array(zfac))
+        ind[:,0] = split * ind[:,0] + ind[:,3] / remain 
+        ind[:,3] = ind[:,3] % remain
+        xztot /= split
+        yztot /= split
+      elif xztot <= xytot and xztot < yztot:
+        split = yfac.pop(0)
+        print("Splitting y into", split)
+        remain = np.prod(np.array(yfac))
+        ind[:,0] = split * ind[:,0] + ind[:,2] / remain 
+        ind[:,2] = ind[:,2] % remain
+        xytot /= split
+        yztot /= split
+      else:
+        split = xfac.pop(0)
+        print("Splitting x into", split)
+        remain = np.prod(np.array(xfac))
+        ind[:,0] = split * ind[:,0] + ind[:,1] / remain 
+        ind[:,1] = ind[:,1] % remain
+        xytot /= split
+        xztot /= split
+
+    self.map = ind[:,0]
+
+    return
+
+  def get_map(self):
+    import numpy as np
+    map_data = "{:d} 0 0 0 0 0 0\n".format(self.elements.shape[0])
+
+    my_n = np.copy(self.n)
+    if not self.boundaries[0] == 'P':
+      my_n[1] += 1
+    if not self.boundaries[1] == 'P':
+      my_n[0] += 1
+    if not self.boundaries[5] == 'P':
+      my_n[2] += 1
+
+    for e in range(self.map.shape[0]):
+      ix = int((self.elements[e,0] - self.root[0])/self.delta[0])
+      iy = int((self.elements[e,4] - self.root[1])/self.delta[1])
+      iz = int((self.elements[e,8] - self.root[2])/self.delta[2])
+
+      map_data += "{:d} {:d} {:d} {:d} {:d} {:d} {:d} {:d} {:d}\n".format(
+                   self.map[e], 
+                   get_ind(ix,   iy  , iz  , my_n),
+                   get_ind(ix+1, iy  , iz  , my_n),
+                   get_ind(ix,   iy+1, iz  , my_n),
+                   get_ind(ix+1, iy+1, iz  , my_n),
+                   get_ind(ix,   iy  , iz+1, my_n),
+                   get_ind(ix+1, iy  , iz+1, my_n),
+                   get_ind(ix,   iy+1, iz+1, my_n),
+                   get_ind(ix+1, iy+1, iz+1, my_n))
+     
+    return map_data
 

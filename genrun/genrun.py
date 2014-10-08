@@ -79,6 +79,8 @@ mesh_data = msh.get_mesh_data()
 msh.generate_faces()
 fluid_boundaries = msh.get_fluid_boundaries()
 thermal_boundaries = fluid_boundaries.replace('SYM', 'I  ').replace('W  ', 'I  ')
+msh.set_map()
+map_data = msh.get_map()
 
 # writes the current variable scope to the configuration
 config = locals()
@@ -100,16 +102,17 @@ with open("./size_mod.F90", "w") as f:
 with open(path.join(mypath, "template.rea"), "r") as f:
   rea_template = f.read()
 rea = rea_template.format(**config)
-
 with open("./tmp.rea", "w") as f:
   f.write(rea)
 
 with open(path.join(mypath, "template.box"), "r") as f:
   box_template = f.read()
 box = box_template.format(**config)
-
 with open("./tmp.box", "w") as f:
   f.write(box)
+
+with open("./{:s}.map".format(args.name), "w") as f:
+  f.write(map_data) 
 
 if args.usr != None:
   with open(args.usr, "r") as f:
@@ -121,9 +124,9 @@ if args.usr != None:
 #system("echo 'tmp.box' | genbox")
 shutil.copy("tmp.rea", args.name+".rea")
 #shutil.copy("box.re2", args.name+".re2")
-with open(".tmp", "w") as f:
-  f.write(args.name + "\n0.05\n")
-system("genmap < .tmp")
+#with open(".tmp", "w") as f:
+#  f.write(args.name + "\n0.05\n")
+#system("genmap < .tmp")
 system("{:s} clean".format(args.makenek))
 system("{:s} {:s}".format(args.makenek, args.name))
 
