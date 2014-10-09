@@ -170,18 +170,15 @@ class Mesh:
       ind[e,3] = int((self.elements[e,8] - self.root[2])/self.delta[2])
 
     xfac = factor(self.n[0])
-    yfac = factor(self.n[0])
-    zfac = factor(self.n[0])
+    yfac = factor(self.n[1])
+    zfac = factor(self.n[2])
     xytot = np.prod(np.array(xfac)) * np.prod(np.array(yfac))
     xztot = np.prod(np.array(xfac)) * np.prod(np.array(zfac))
     yztot = np.prod(np.array(yfac)) * np.prod(np.array(zfac))
 
     while len(xfac) + len(yfac) + len(zfac) > 0:
-      print(ind[:,0])
-      print(ind[0:10,1:4])
       if xytot < xztot and xytot < yztot:
         split = zfac.pop(0)
-        print("Splitting z into", split)
         remain = np.prod(np.array(zfac))
         ind[:,0] = split * ind[:,0] + ind[:,3] / remain 
         ind[:,3] = ind[:,3] % remain
@@ -189,7 +186,6 @@ class Mesh:
         yztot /= split
       elif xztot <= xytot and xztot < yztot:
         split = yfac.pop(0)
-        print("Splitting y into", split)
         remain = np.prod(np.array(yfac))
         ind[:,0] = split * ind[:,0] + ind[:,2] / remain 
         ind[:,2] = ind[:,2] % remain
@@ -197,7 +193,6 @@ class Mesh:
         yztot /= split
       else:
         split = xfac.pop(0)
-        print("Splitting x into", split)
         remain = np.prod(np.array(xfac))
         ind[:,0] = split * ind[:,0] + ind[:,1] / remain 
         ind[:,1] = ind[:,1] % remain
