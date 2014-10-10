@@ -4,7 +4,7 @@ def factor(number):
   n = int(number)
   test = 2
   while n >= test:
-    if (n/test)*test == n:
+    if int((n/test))*test == n:
       n /= test
       factors.insert(0,test)
     else:
