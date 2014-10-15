@@ -70,8 +70,8 @@ C
 C
 C     Uzawa projection array dimensions
 C
-      parameter (mxprev = 80)
-      parameter (lgmres = 40)
+      parameter (mxprev = 40)
+      parameter (lgmres = 10)
 C
 C     Split projection array dimensions
 C
