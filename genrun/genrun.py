@@ -79,7 +79,7 @@ mesh_data = msh.get_mesh_data()
 msh.generate_faces()
 fluid_boundaries = msh.get_fluid_boundaries()
 thermal_boundaries = fluid_boundaries.replace('SYM', 'I  ').replace('W  ', 'I  ')
-msh.set_map()
+msh.set_map(procs)
 map_data = msh.get_map()
 
 # writes the current variable scope to the configuration

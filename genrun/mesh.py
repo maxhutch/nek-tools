@@ -161,7 +161,7 @@ class Mesh:
                             self.element_bounds[e*6+f], int(self.faces[e,f,0]), self.faces[e,f,1], opposite_face[f])
     return fluid_boundary[:-1]
 
-  def set_map(self):
+  def set_map(self, target):
     import numpy as np
     ind = np.zeros((np.prod(self.n), 4), dtype=np.uint32)
     for e in range(self.elements.shape[0]):
@@ -169,35 +169,82 @@ class Mesh:
       ind[e,2] = int((self.elements[e,4] - self.root[1])/self.delta[1])
       ind[e,3] = int((self.elements[e,8] - self.root[2])/self.delta[2])
 
+    tfac = factor(target)
     xfac = factor(self.n[0])
     yfac = factor(self.n[1])
     zfac = factor(self.n[2])
-    xytot = np.prod(np.array(xfac)) * np.prod(np.array(yfac))
-    xztot = np.prod(np.array(xfac)) * np.prod(np.array(zfac))
-    yztot = np.prod(np.array(yfac)) * np.prod(np.array(zfac))
+    xtot = np.prod(np.array(xfac))
+    ytot = np.prod(np.array(yfac))
+    ztot = np.prod(np.array(zfac))
 
+    queue = []
+
+    while len(tfac) > 0:
+      if len(set(tfac) & set(xfac)) == 0 :
+        xtot = 0
+      if len(set(tfac) & set(yfac)) == 0 :
+        ytot = 0
+      if len(set(tfac) & set(zfac)) == 0 :
+        ztot = 0
+
+      if ztot >= xtot and ztot >= ytot :
+        split = (set(tfac) & set(zfac)).pop()
+        queue.append((2,split))
+        tfac.remove(split)
+        zfac.remove(split)
+        ztot /= split
+        print("Queuing z")
+      elif ytot >= xtot :
+        split = (set(tfac) & set(yfac)).pop()
+        queue.append((1,split))
+        tfac.remove(split)
+        yfac.remove(split)
+        ytot /= split
+        print("Queuing y")
+      else : 
+        split = (set(tfac) & set(xfac)).pop()
+        queue.append((0,split))
+        tfac.remove(split)
+        xfac.remove(split)
+        xtot /= split
+        print("Queuing x")
+
+    xtot = np.prod(np.array(xfac))
+    ytot = np.prod(np.array(yfac))
+    ztot = np.prod(np.array(zfac))
     while len(xfac) + len(yfac) + len(zfac) > 0:
-      if xytot < xztot and xytot < yztot:
+      if ztot >= xtot and ztot >= ytot :
         split = zfac.pop(0)
-        remain = np.prod(np.array(zfac))
-        ind[:,0] = split * ind[:,0] + ind[:,3] / remain 
-        ind[:,3] = ind[:,3] % remain
-        xztot /= split
-        yztot /= split
-      elif xztot <= xytot and xztot < yztot:
+        queue.append((2,split))
+        ztot /= split
+      elif ytot >= xtot :
         split = yfac.pop(0)
-        remain = np.prod(np.array(yfac))
-        ind[:,0] = split * ind[:,0] + ind[:,2] / remain 
-        ind[:,2] = ind[:,2] % remain
-        xytot /= split
-        yztot /= split
-      else:
+        queue.append((1,split))
+        ytot /= split
+      else : 
         split = xfac.pop(0)
-        remain = np.prod(np.array(xfac))
-        ind[:,0] = split * ind[:,0] + ind[:,1] / remain 
-        ind[:,1] = ind[:,1] % remain
-        xytot /= split
-        xztot /= split
+        queue.append((0,split))
+        xtot /= split
+
+    xfac = factor(self.n[0])
+    yfac = factor(self.n[1])
+    zfac = factor(self.n[2])
+    xtot = np.prod(np.array(xfac))
+    ytot = np.prod(np.array(yfac))
+    ztot = np.prod(np.array(zfac))
+    for split in queue:
+      if split[0] == 0:
+        xtot /= split[1]
+        ind[:,0] = split[1] * ind[:,0] + ind[:,1] / xtot
+        ind[:,1] = ind[:,1] % xtot
+      if split[0] == 1:
+        ytot /= split[1]
+        ind[:,0] = split[1] * ind[:,0] + ind[:,2] / ytot
+        ind[:,2] = ind[:,2] % ytot
+      if split[0] == 2:
+        ztot /= split[1]
+        ind[:,0] = split[1] * ind[:,0] + ind[:,3] / ztot
+        ind[:,3] = ind[:,3] % ztot
 
     self.map = ind[:,0]
 
