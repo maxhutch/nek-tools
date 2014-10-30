@@ -114,14 +114,7 @@
   T     IFHEAT
    8.00000   8.00000  -0.500000   -4.00000     XFAC,YFAC,XZERO,YZERO
  **MESH DATA** 6 lines are X,Y,Z;X,Y,Z. Columns corners 1-4;5-8
-{mesh_data}
-  ***** CURVED SIDE DATA *****
-           0 Curved sides follow IEDGE,IEL,CURVE(I),I=1,5, CCURVE
-  ***** BOUNDARY CONDITIONS *****
-  ***** FLUID   BOUNDARY CONDITIONS *****
-{fluid_boundaries}
-  ***** THERMAL BOUNDARY CONDITIONS *****
-{thermal_boundaries}
+ **TAIL OPTS**
             0 PRESOLVE/RESTART OPTIONS  *****
             7         INITIAL CONDITIONS *****
 C Default
