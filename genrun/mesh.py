@@ -16,15 +16,15 @@ def factor(number):
   return factors
 
 def get_ind(ix, iy, iz, n):
-  return 1 + (ix%n[0]) + (iy%n[1]) * n[0] + (iz%n[2]) * n[0] * n[1]
+  return int(1 + (ix%n[0]) + (iy%n[1]) * n[0] + (iz%n[2]) * n[0] * n[1])
 
 class Mesh:
 
   def __init__(self, root, corner, n, boundaries):
     import numpy as np
-    self.root = np.array(root)
-    self.corner = np.array(corner)
-    self.n = np.array(n)
+    self.root = np.array(root, dtype=np.float64)
+    self.corner = np.array(corner, dtype=np.float64)
+    self.n = np.array(n, dtype=np.int32)
     self.boundaries = boundaries
     self.extent = self.corner - self.root
     self.delta = self.extent / self.n
@@ -37,15 +37,16 @@ class Mesh:
 
   def generate_elements(self):
     import numpy as np
-    self.elements = np.zeros((np.prod(self.n), 24))  
-    e_root = np.array([0.,0.,0.])
+    self.elements = np.zeros((np.prod(self.n), 24), dtype=np.float64)  
+    e_root = np.array([0.,0.,0.], dtype=np.float64)
+    e = 0.0
     for iz in range(self.n[2]):
+      e_root[2] = self.root[2] + iz * self.delta[2]
       for iy in range(self.n[1]):
+        e_root[1] = self.root[1] + iy * self.delta[1]
         for ix in range(self.n[0]):
-          e = ix + iy * self.n[0] + iz * self.n[0]*self.n[1]
+          #e = ix + iy * self.n[0] + iz * self.n[0]*self.n[1]
           e_root[0] = self.root[0] + ix * self.delta[0]
-          e_root[1] = self.root[1] + iy * self.delta[1]
-          e_root[2] = self.root[2] + iz * self.delta[2]
 
           self.elements[e,0]  = e_root[0]
           self.elements[e,1]  = e_root[0] + self.delta[0]
@@ -76,6 +77,8 @@ class Mesh:
           self.elements[e,21] = e_root[2] + self.delta[2]
           self.elements[e,22] = e_root[2] + self.delta[2]
           self.elements[e,23] = e_root[2] + self.delta[2]
+
+          e = e + 1
     return
 
   def generate_faces(self):
@@ -83,9 +86,9 @@ class Mesh:
     self.faces = np.zeros((np.prod(self.n),6, 2))
     self.element_bounds = []
     for e in range(self.elements.shape[0]):
-      ix = (self.elements[e,0] - self.root[0])/self.delta[0]
-      iy = (self.elements[e,4] - self.root[1])/self.delta[1]
-      iz = (self.elements[e,8] - self.root[2])/self.delta[2]
+      ix = int((self.elements[e,0] - self.root[0])/self.delta[0])
+      iy = int((self.elements[e,4] - self.root[1])/self.delta[1])
+      iz = int((self.elements[e,8] - self.root[2])/self.delta[2])
 
       self.faces[e,0,0] = (e+1)*10 + 1 
       if iy == 0:
@@ -140,9 +143,9 @@ class Mesh:
     letters = [chr(97+i) for i in range(26)] + [chr(65+i) for i in range(26)]
     mesh = " {:11d}  {:d} {:11d}           NEL,NDIM,NELV".format(np.prod(self.n), 3, np.prod(self.n))
     for e in range(self.elements.shape[0]):
-      ix = int((self.elements[e,0] - self.root[0])/self.delta[0])
-      iy = int((self.elements[e,4] - self.root[1])/self.delta[1])
-      iz = int((self.elements[e,8] - self.root[2])/self.delta[2])
+      ix = np.rint((self.elements[e,0] - self.root[0])/self.delta[0])
+      iy = np.rint((self.elements[e,4] - self.root[1])/self.delta[1])
+      iz = np.rint((self.elements[e,8] - self.root[2])/self.delta[2])
       mesh += "\n            ELEMENT {:11d} [{:5d}{:1s}]  GROUP  0\n".format(e+1, iz+1, letters[(ix+iy*self.n[0]) % 52]) 
       mesh += "  {: 13.10E}  {: 13.10E}  {: 13.10E}  {: 13.10E} \n".format(*(self.elements[e, 0: 4].tolist())) 
       mesh += "  {: 13.10E}  {: 13.10E}  {: 13.10E}  {: 13.10E} \n".format(*(self.elements[e, 4: 8].tolist())) 
@@ -163,19 +166,14 @@ class Mesh:
 
   def set_map(self, target):
     import numpy as np
-    ind = np.zeros((np.prod(self.n), 4), dtype=np.uint32)
-    for e in range(self.elements.shape[0]):
-      ind[e,1] = int((self.elements[e,0] - self.root[0])/self.delta[0])
-      ind[e,2] = int((self.elements[e,4] - self.root[1])/self.delta[1])
-      ind[e,3] = int((self.elements[e,8] - self.root[2])/self.delta[2])
 
     tfac = factor(target)
     xfac = factor(self.n[0])
     yfac = factor(self.n[1])
     zfac = factor(self.n[2])
-    xtot = np.prod(np.array(xfac))
-    ytot = np.prod(np.array(yfac))
-    ztot = np.prod(np.array(zfac))
+    xtot = int(np.prod(np.array(xfac)))
+    ytot = int(np.prod(np.array(yfac)))
+    ztot = int(np.prod(np.array(zfac)))
 
     queue = []
 
@@ -209,29 +207,38 @@ class Mesh:
         xtot /= split
         print("Queuing x")
 
-    xtot = np.prod(np.array(xfac))
-    ytot = np.prod(np.array(yfac))
-    ztot = np.prod(np.array(zfac))
+    xtot = int(np.prod(np.array(xfac)))
+    ytot = int(np.prod(np.array(yfac)))
+    ztot = int(np.prod(np.array(zfac)))
     while len(xfac) + len(yfac) + len(zfac) > 0:
       if ztot >= xtot and ztot >= ytot :
         split = zfac.pop(0)
         queue.append((2,split))
         ztot /= split
+        print("Filling z")
       elif ytot >= xtot :
         split = yfac.pop(0)
         queue.append((1,split))
         ytot /= split
+        print("Filling y")
       else : 
         split = xfac.pop(0)
         queue.append((0,split))
         xtot /= split
+        print("Filling x")
+
+    ind = np.zeros((np.prod(self.n), 4), dtype=np.uint32)
+    for e in range(self.elements.shape[0]):
+      ind[e,1] = np.rint((self.elements[e,0] - self.root[0])/self.delta[0])
+      ind[e,2] = np.rint((self.elements[e,4] - self.root[1])/self.delta[1])
+      ind[e,3] = np.rint((self.elements[e,8] - self.root[2])/self.delta[2])
 
     xfac = factor(self.n[0])
     yfac = factor(self.n[1])
     zfac = factor(self.n[2])
-    xtot = np.prod(np.array(xfac))
-    ytot = np.prod(np.array(yfac))
-    ztot = np.prod(np.array(zfac))
+    xtot = int(np.prod(np.array(xfac)))
+    ytot = int(np.prod(np.array(yfac)))
+    ztot = int(np.prod(np.array(zfac)))
     for split in queue:
       if split[0] == 0:
         xtot /= split[1]
@@ -263,9 +270,9 @@ class Mesh:
       my_n[2] += 1
 
     for e in range(self.map.shape[0]):
-      ix = int((self.elements[e,0] - self.root[0])/self.delta[0])
-      iy = int((self.elements[e,4] - self.root[1])/self.delta[1])
-      iz = int((self.elements[e,8] - self.root[2])/self.delta[2])
+      ix = np.rint((self.elements[e,0] - self.root[0])/self.delta[0])
+      iy = np.rint((self.elements[e,4] - self.root[1])/self.delta[1])
+      iz = np.rint((self.elements[e,8] - self.root[2])/self.delta[2])
 
       map_data += "{:d} {:d} {:d} {:d} {:d} {:d} {:d} {:d} {:d}\n".format(
                    self.map[e], 

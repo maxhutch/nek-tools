@@ -1,4 +1,4 @@
-#!/usr/bin/python3
+#!/home/maxhutch/anaconda3/bin/python
 from sys import argv
 from os import system
 from os import path
@@ -7,6 +7,20 @@ import argparse
 import json
 from mesh import Mesh
 
+class Timer(object):
+    def __init__(self, name=None):
+        self.name = name
+
+    def __enter__(self):
+        import time
+        self.tstart = time.time()
+
+    def __exit__(self, type, value, traceback):
+        import time
+        if self.name:
+            print("[{:s}]".format(self.name),)
+        print('Elapsed: {:f}'.format(time.time() - self.tstart))
+
 ''' Loading stuff '''
 parser = argparse.ArgumentParser(description="Generate NEK inputs")
 parser.add_argument('name', help="Name to assign to generated system")
@@ -14,6 +28,7 @@ parser.add_argument('-d', '--dict', dest='config', help="Dictionary of parametes
 parser.add_argument('-u', '--usr', dest='usr', help="*.usr file to use for build")
 parser.add_argument('-n', '--nproc', dest='np', type=int, default=-1, help="Number of processes to target")
 parser.add_argument('-m', '--makenek', dest='makenek', default="makenek", help="Path to makenek")
+parser.add_argument('--noclean', dest='clean', default=True, action="store_false", help="Don't clean")
 
 args = parser.parse_args()
 mypath = (path.realpath(__file__))[:-9]
@@ -73,14 +88,18 @@ else:
   bottom_boundv = 'I'
 
 # genbox and genmap
-msh = Mesh(root_mesh, extent_mesh, shape_mesh, [left_bound, front_bound, right_bound, back_bound, top_bound, bottom_bound])
-msh.generate_elements()
-mesh_data = msh.get_mesh_data()
-msh.generate_faces()
-fluid_boundaries = msh.get_fluid_boundaries()
-thermal_boundaries = fluid_boundaries.replace('SYM', 'I  ').replace('W  ', 'I  ')
-msh.set_map(procs)
-map_data = msh.get_map()
+with Timer("init_mesh"):
+  msh = Mesh(root_mesh, extent_mesh, shape_mesh, [left_bound, front_bound, right_bound, back_bound, top_bound, bottom_bound])
+with Timer("generate_elements"):
+  msh.generate_elements()
+#mesh_data = msh.get_mesh_data()
+#msh.generate_faces()
+#fluid_boundaries = msh.get_fluid_boundaries()
+#thermal_boundaries = fluid_boundaries.replace('SYM', 'I  ').replace('W  ', 'I  ')
+with Timer("set_map"):
+  msh.set_map(procs)
+with Timer("get_map"):
+  map_data = msh.get_map()
 
 # writes the current variable scope to the configuration
 config = locals()
@@ -99,11 +118,12 @@ size = size_template.format(**config)
 with open("./size_mod.F90", "w") as f:
   f.write(size)
 
-with open(path.join(mypath, "template.rea"), "r") as f:
-  rea_template = f.read()
-rea = rea_template.format(**config)
-with open("./tmp.rea", "w") as f:
-  f.write(rea)
+with Timer("write_rea"):
+  with open(path.join(mypath, "template.rea"), "r") as f:
+    rea_template = f.read()
+  rea = rea_template.format(**config)
+  with open("./tmp.rea", "w") as f:
+    f.write(rea)
 
 with open(path.join(mypath, "template.box"), "r") as f:
   box_template = f.read()
@@ -127,6 +147,7 @@ shutil.copy("tmp.rea", args.name+".rea")
 #with open(".tmp", "w") as f:
 #  f.write(args.name + "\n0.05\n")
 #system("genmap < .tmp")
-system("{:s} clean".format(args.makenek))
+if args.clean:
+  system("{:s} clean".format(args.makenek))
 system("{:s} {:s}".format(args.makenek, args.name))
 
