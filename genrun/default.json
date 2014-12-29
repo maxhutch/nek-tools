@@ -42,9 +42,12 @@
   "dealiasing_order" : 12,
   "io_files" : 1.0,
   "restart" : 0.0,
-  "tolrel" : 1.0e-05,
-  "tolabs" : 1.0e-05,
+  "tolrel" : 1.0e-04,
+  "tolabs" : 1.0e-04,
   "toldiv" : 0.0,
   "tolhelm" : 0.0,
+  "npres" :  40,
+  "ngmres" : 20,
+  "nvel" : 2,
   "procs" : 4
 }

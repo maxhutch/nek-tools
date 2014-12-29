@@ -73,8 +73,8 @@ module size_m
 !     Uzawa projection array dimensions
 
     integer :: mxprev, lgmres
-    parameter (mxprev = 40)
-    parameter (lgmres = 10)
+    parameter (mxprev = {npres})
+    parameter (lgmres = {ngmres})
 
 !     Split projection array dimensions
 
