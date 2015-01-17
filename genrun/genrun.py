@@ -27,8 +27,9 @@ parser.add_argument('name', help="Name to assign to generated system")
 parser.add_argument('-d', '--dict', dest='config', help="Dictionary of parametesr (JSON)")
 parser.add_argument('-u', '--usr', dest='usr', help="*.usr file to use for build")
 parser.add_argument('-n', '--nproc', dest='np', type=int, default=-1, help="Number of processes to target")
-parser.add_argument('-m', '--makenek', dest='makenek', default="makenek", help="Path to makenek")
-parser.add_argument('--noclean', dest='clean', default=True, action="store_false", help="Don't clean")
+parser.add_argument('-m', '--map', dest='map', default=False, action="store_true", help="Map?")
+parser.add_argument('--makenek', dest='makenek', default="makenek", help="Path to makenek")
+parser.add_argument('-c', '--clean', dest='clean', default=False, action="store_true", help="Clean?")
 
 args = parser.parse_args()
 mypath = (path.realpath(__file__))[:-9]
@@ -90,16 +91,18 @@ else:
 # genbox and genmap
 with Timer("init_mesh"):
   msh = Mesh(root_mesh, extent_mesh, shape_mesh, [left_bound, front_bound, right_bound, back_bound, top_bound, bottom_bound])
-with Timer("generate_elements"):
-  msh.generate_elements()
+if args.map:
+  with Timer("generate_elements"):
+    msh.generate_elements()
 #mesh_data = msh.get_mesh_data()
 #msh.generate_faces()
 #fluid_boundaries = msh.get_fluid_boundaries()
 #thermal_boundaries = fluid_boundaries.replace('SYM', 'I  ').replace('W  ', 'I  ')
-with Timer("set_map"):
-  msh.set_map(procs)
-with Timer("get_map"):
-  map_data = msh.get_map()
+if args.map:
+  with Timer("set_map"):
+    msh.set_map(procs)
+  with Timer("get_map"):
+    map_data = msh.get_map()
 
 # writes the current variable scope to the configuration
 config = locals()
@@ -131,8 +134,9 @@ box = box_template.format(**config)
 with open("./tmp.box", "w") as f:
   f.write(box)
 
-with open("./{:s}.map".format(args.name), "w") as f:
-  f.write(map_data) 
+if args.map:
+  with open("./{:s}.map".format(args.name), "w") as f:
+    f.write(map_data) 
 
 if args.usr != None:
   with open(args.usr, "r") as f:
