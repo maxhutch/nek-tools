@@ -49,8 +49,8 @@
    0.              p45 Relaxation factor for DTFS
    0.              p46 reserved
    0.              p47 vnu: mesh matieral prop
-   0.
-   0.
+   {cps:f}         p48 0=XXT, 1=SCPS
+   {max_fft_procs:f}  p49 max FFT procs
    0.
    0.
    0.              p52 IOHIS

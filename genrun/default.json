@@ -49,5 +49,7 @@
   "npres" :  40,
   "ngmres" : 20,
   "nvel" : 2,
+  "cps" : 1,
+  "max_fft_procs" : 0,
   "procs" : 4
 }
