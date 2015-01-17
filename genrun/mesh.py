@@ -259,7 +259,8 @@ class Mesh:
 
   def get_map(self):
     import numpy as np
-    map_data = "{:d} 0 0 0 0 0 0\n".format(self.elements.shape[0])
+    map_data = "{:d} 0 {:d} {:d} {:d} 0 0\n".format(self.elements.shape[0], 
+                                             self.n[0], self.n[1], self.n[2])
 
     my_n = np.copy(self.n)
     if not self.boundaries[0] == 'P':
