@@ -103,6 +103,12 @@ if args.map:
     msh.set_map(procs)
   with Timer("get_map"):
     map_data = msh.get_map()
+else:
+  map_data = "{:d} 0 {:d} {:d} {:d} 0 0".format(
+              elements_total, 
+              shape_mesh[0],
+              shape_mesh[1],
+              shape_mesh[2])
 
 # writes the current variable scope to the configuration
 config = locals()
@@ -134,9 +140,8 @@ box = box_template.format(**config)
 with open("./tmp.box", "w") as f:
   f.write(box)
 
-if args.map:
-  with open("./{:s}.map".format(args.name), "w") as f:
-    f.write(map_data) 
+with open("./{:s}.map".format(args.name), "w") as f:
+  f.write(map_data) 
 
 if args.usr != None:
   with open(args.usr, "r") as f:
