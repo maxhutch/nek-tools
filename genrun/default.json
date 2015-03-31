@@ -52,5 +52,8 @@
   "cps" : 1,
   "max_fft_procs" : 0,
   "procs" : 4,
+  "io_prec" : 8,
+  "no_check" : 0,
+  "filter_wt" : 0.05,
   "io_pad" : 23
 }

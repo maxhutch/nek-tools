@@ -64,7 +64,7 @@
    0.              p60 !=0 --> init. velocity to small nonzero
    {io_pad:f}      p61 log_2(pad size): number of bytes to pad output fields to
    0.              p62 >0 --> force byte_swap for output
-   0.              p63 =8 --> force 8-byte output
+   {io_prec:f}              p63 =8 --> force 8-byte output
    0.              p64 =1 --> perturbation restart
    {io_files:f}    p65 #iofiles (eg, 0 or 64); <0 --> sep. dirs
    6.              p66 output : <0=ascii, else binary
@@ -76,7 +76,7 @@
    0.
    0.
    0.              p74 verbose Helmholtz
-   0.              p75 skip checks?
+   {no_check:f}    p75 skip checks?
    0.
    0.
    0.
@@ -104,7 +104,7 @@
    0.
    1.0000           p101   No. of additional filter modes
    1.00000          p102   Dump out divergence at each time step
-   .050            p103   weight of stabilizing filter (.01)
+   {filter_wt:f}    p103   weight of stabilizing filter (.01)
             0  SCALAR DATA FOLLOW (CONDUCT; RHOCP)
             5  LOGICAL SWITCHES FOLLOW
   T     IFFLOW
