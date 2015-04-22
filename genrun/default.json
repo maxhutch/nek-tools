@@ -51,5 +51,6 @@
   "nvel" : 2,
   "cps" : 1,
   "max_fft_procs" : 0,
-  "procs" : 4
+  "procs" : 4,
+  "io_pad" : 23
 }
