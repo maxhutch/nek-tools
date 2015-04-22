@@ -1,4 +1,6 @@
-#!/home/maxhutch/anaconda3/bin/python
+#!/usr/bin/env python3
+
+##!/home/maxhutch/anaconda3/bin/python
 from sys import argv
 from os import system
 from os import path
@@ -151,7 +153,11 @@ shutil.copy("tmp.rea", args.name+".rea")
 #with open(".tmp", "w") as f:
 #  f.write(args.name + "\n0.05\n")
 #system("genmap < .tmp")
+from subprocess import call
+from os.path import dirname
 if args.clean:
-  system("{:s} clean".format(args.makenek))
-system("{:s} {:s}".format(args.makenek, args.name))
+  args = [args.makenek, clean, dirname(args.makenek)]
+  call(args, shell=True)
+args = [args.makenek, args.name, dirname(args.makenek)]
+call(args, shell=True)
 
