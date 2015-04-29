@@ -104,7 +104,7 @@ if args.map:
   with Timer("get_map"):
     map_data = msh.get_map()
 else:
-  map_data = "{:d} 0 {:d} {:d} {:d} 0 0".format(
+  map_data = "{:d} 0 {:d} {:d} {:d} 0 0\n".format(
               elements_total, 
               shape_mesh[0],
               shape_mesh[1],
