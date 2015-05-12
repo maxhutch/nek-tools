@@ -162,7 +162,7 @@ from subprocess import call
 from os.path import dirname
 if args.clean:
   args = [args.makenek, clean, dirname(args.makenek)]
-  call(args, shell=True)
+  call(args)
 args = [args.makenek, args.name, dirname(args.makenek)]
-call(args, shell=True)
+call(args)
 
