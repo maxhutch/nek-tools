@@ -32,6 +32,7 @@ parser.add_argument('-n', '--nproc', dest='np', type=int, default=-1, help="Numb
 parser.add_argument('-m', '--map', dest='map', default=False, action="store_true", help="Map?")
 parser.add_argument('--makenek', dest='makenek', default="makenek", help="Path to makenek")
 parser.add_argument('-c', '--clean', dest='clean', default=False, action="store_true", help="Clean?")
+parser.add_argument('-l', '--legacy', dest='legacy', default=False, action="store_true", help="Legacy Nek5000")
 
 args = parser.parse_args()
 mypath = (path.realpath(__file__))[:-9]
@@ -106,11 +107,24 @@ if args.map:
   with Timer("get_map"):
     map_data = msh.get_map()
 else:
+  if left_bound == 'P':
+    map0 = shape_mesh[0]
+  else:
+    map0 = -shape_mesh[0]
+  if front_bound == 'P':
+    map1 = shape_mesh[1]
+  else:
+    map1 = -shape_mesh[1]
+  if top_bound == 'P':
+    map2 = shape_mesh[2]
+  else:
+    map2 = -shape_mesh[2]
+
   map_data = "{:d} 0 {:d} {:d} {:d} 0 0\n".format(
               elements_total, 
-              shape_mesh[0],
-              shape_mesh[1],
-              shape_mesh[2])
+              map0,
+              map1,
+              map2)
 
 # writes the current variable scope to the configuration
 config = locals()
@@ -152,12 +166,17 @@ if args.usr != None:
   with open(args.name + ".usr", "w") as f:
     f.write(usr)
 
-#system("echo 'tmp.box' | genbox")
-shutil.copy("tmp.rea", args.name+".rea")
-#shutil.copy("box.re2", args.name+".re2")
-#with open(".tmp", "w") as f:
-#  f.write(args.name + "\n0.05\n")
-#system("genmap < .tmp")
+if not args.legacy:
+  shutil.copy("tmp.rea", args.name+".rea")
+else:
+  system("echo 'tmp.box' | genbox")
+  shultil.copy("box.rea", args.name+".rea")
+  #shutil.copy("box.re2", args.name+".re2")
+  if not args.map:
+    with open(".tmp", "w") as f:
+      f.write(args.name + "\n0.05\n")
+    system("genmap < .tmp")
+
 from subprocess import call
 from os.path import dirname
 if args.clean:
