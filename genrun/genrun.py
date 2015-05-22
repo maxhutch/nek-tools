@@ -33,6 +33,7 @@ parser.add_argument('-m', '--map', dest='map', default=False, action="store_true
 parser.add_argument('--makenek', dest='makenek', default="makenek", help="Path to makenek")
 parser.add_argument('-c', '--clean', dest='clean', default=False, action="store_true", help="Clean?")
 parser.add_argument('-l', '--legacy', dest='legacy', default=False, action="store_true", help="Legacy Nek5000")
+parser.add_argument('--tdir', dest='tdir', default='.',  help="Directory to build in")
 
 args = parser.parse_args()
 mypath = (path.realpath(__file__))[:-9]
@@ -47,7 +48,12 @@ if args.config != None:
 
 config = dict(list(default_config.items()) + list(loaded_config.items()))
 
-with open("./{:s}.json".format(args.name), "w") as f:
+from os.path import exists
+from os import makedirs
+if not exists(args.tdir):
+    makedirs(args.tdir)
+
+with open("{:s}/{:s}.json".format(args.tdir, args.name), "w") as f:
   json.dump(config, f, indent=2)
 
 ''' Computing stuff '''
@@ -97,10 +103,12 @@ with Timer("init_mesh"):
 if args.map:
   with Timer("generate_elements"):
     msh.generate_elements()
+
 #mesh_data = msh.get_mesh_data()
 #msh.generate_faces()
 #fluid_boundaries = msh.get_fluid_boundaries()
 #thermal_boundaries = fluid_boundaries.replace('SYM', 'I  ').replace('W  ', 'I  ')
+
 if args.map:
   with Timer("set_map"):
     msh.set_map(procs)
@@ -134,43 +142,43 @@ config = locals()
 with open(path.join(mypath, "template.SIZE"), "r") as f:
   size_template = f.read()
 size = size_template.format(**config)
-with open("./SIZE", "w") as f:
+with open("{:s}/SIZE".format(args.tdir), "w") as f:
   f.write(size)
 
 with open(path.join(mypath, "template.size_mod"), "r") as f:
   size_template = f.read()
 size = size_template.format(**config)
-with open("./size_mod.F90", "w") as f:
+with open("{:s}/size_mod.F90".format(args.tdir), "w") as f:
   f.write(size)
 
 with Timer("write_rea"):
   with open(path.join(mypath, "template.rea"), "r") as f:
     rea_template = f.read()
   rea = rea_template.format(**config)
-  with open("./tmp.rea", "w") as f:
+  with open("{:s}/tmp.rea".format(args.tdir), "w") as f:
     f.write(rea)
 
 with open(path.join(mypath, "template.box"), "r") as f:
   box_template = f.read()
 box = box_template.format(**config)
-with open("./tmp.box", "w") as f:
+with open("{:s}/tmp.box".format(args.tdir), "w") as f:
   f.write(box)
 
-with open("./{:s}.map".format(args.name), "w") as f:
+with open("{:s}/{:s}.map".format(args.tdir, args.name), "w") as f:
   f.write(map_data) 
 
 if args.usr != None:
   with open(args.usr, "r") as f:
     usr_template = f.read()
   usr = usr_template.format(**config)
-  with open(args.name + ".usr", "w") as f:
+  with open("{:s}/{:s}.usr".format(args.tdir, args.name), "w") as f:
     f.write(usr)
 
 if not args.legacy:
-  shutil.copy("tmp.rea", args.name+".rea")
+  shutil.copy("{:s}/tmp.rea".format(args.tdir), "{:s}/{:s}.rea".format(args.tdir, args.name))
 else:
   system("echo 'tmp.box' | genbox")
-  shultil.copy("box.rea", args.name+".rea")
+  shutil.copy("box.rea", args.name+".rea")
   #shutil.copy("box.re2", args.name+".re2")
   if not args.map:
     with open(".tmp", "w") as f:
@@ -179,9 +187,11 @@ else:
 
 from subprocess import call
 from os.path import dirname
+#from os import chdir
+#chdir(args.tdir)
 if args.clean:
-  args = [args.makenek, clean, dirname(args.makenek)]
-  call(args)
-args = [args.makenek, args.name, dirname(args.makenek)]
-call(args)
+  cmd = [args.makenek, clean, dirname(args.makenek)]
+  call(cmd)
+cmd = [args.makenek, args.name, dirname(args.makenek)]
+call(cmd, cwd=args.tdir)
 
