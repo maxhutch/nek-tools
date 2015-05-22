@@ -193,5 +193,8 @@ if args.clean:
   cmd = [args.makenek, clean, dirname(args.makenek)]
   call(cmd)
 cmd = [args.makenek, args.name, dirname(args.makenek)]
-call(cmd, cwd=args.tdir)
+if args.tdir == '.':
+  call(cmd)
+else:
+  call(cmd, cwd=args.tdir)
 
