@@ -21,6 +21,7 @@ parser.add_argument('-c', '--clean', dest='clean', default=False, action="store_
 parser.add_argument('-l', '--legacy', dest='legacy', default=False, action="store_true", help="Legacy Nek5000")
 parser.add_argument('--tdir', dest='tdir', default='.',  help="Directory to build in")
 parser.add_argument('--no-make', dest='make', default=True, action="store_false", help="Don't make?")
+parser.add_argument('--override', dest='override', type=json.loads, default={}, help="JSON overrides")
 
 args = parser.parse_args()
 mypath = (path.realpath(__file__))[:-9]
@@ -33,7 +34,7 @@ if args.config != None:
   with open(args.config, 'r') as f:
     loaded_config = json.load(f)
 
-config = dict(list(default_config.items()) + list(loaded_config.items()))
+config = dict(list(default_config.items()) + list(loaded_config.items()) + list(args.override.items()))
 
 from os.path import exists
 from os import makedirs
