@@ -1,6 +1,6 @@
-#!/usr/bin/env python3
+#!/home/maxhutch/anaconda3/bin/python
+##!/usr/bin/env python3
 
-##!/home/maxhutch/anaconda3/bin/python
 from sys import argv
 from os import system
 from os import path
@@ -8,20 +8,6 @@ import shutil
 import argparse
 import json
 from mesh import Mesh
-
-class Timer(object):
-    def __init__(self, name=None):
-        self.name = name
-
-    def __enter__(self):
-        import time
-        self.tstart = time.time()
-
-    def __exit__(self, type, value, traceback):
-        import time
-        if self.name:
-            print("[{:s}]".format(self.name),)
-        print('Elapsed: {:f}'.format(time.time() - self.tstart))
 
 ''' Loading stuff '''
 parser = argparse.ArgumentParser(description="Generate NEK inputs")
@@ -34,6 +20,7 @@ parser.add_argument('--makenek', dest='makenek', default="makenek", help="Path t
 parser.add_argument('-c', '--clean', dest='clean', default=False, action="store_true", help="Clean?")
 parser.add_argument('-l', '--legacy', dest='legacy', default=False, action="store_true", help="Legacy Nek5000")
 parser.add_argument('--tdir', dest='tdir', default='.',  help="Directory to build in")
+parser.add_argument('--no-make', dest='make', default=True, action="store_false", help="Don't make?")
 
 args = parser.parse_args()
 mypath = (path.realpath(__file__))[:-9]
@@ -98,11 +85,9 @@ else:
   bottom_boundv = 'I'
 
 # genbox and genmap
-with Timer("init_mesh"):
-  msh = Mesh(root_mesh, extent_mesh, shape_mesh, [left_bound, front_bound, right_bound, back_bound, top_bound, bottom_bound])
+msh = Mesh(root_mesh, extent_mesh, shape_mesh, [left_bound, front_bound, right_bound, back_bound, top_bound, bottom_bound])
 if args.map:
-  with Timer("generate_elements"):
-    msh.generate_elements()
+  msh.generate_elements()
 
 #mesh_data = msh.get_mesh_data()
 #msh.generate_faces()
@@ -110,10 +95,8 @@ if args.map:
 #thermal_boundaries = fluid_boundaries.replace('SYM', 'I  ').replace('W  ', 'I  ')
 
 if args.map:
-  with Timer("set_map"):
-    msh.set_map(procs)
-  with Timer("get_map"):
-    map_data = msh.get_map()
+  msh.set_map(procs)
+  map_data = msh.get_map()
 else:
   if left_bound == 'P':
     map0 = shape_mesh[0]
@@ -150,13 +133,15 @@ with open(path.join(mypath, "template.size_mod"), "r") as f:
 size = size_template.format(**config)
 with open("{:s}/size_mod.F90".format(args.tdir), "w") as f:
   f.write(size)
+import os
+print("In {:s}\n".format(os.getcwd()))
+print("Wrote size_mod.F90 to {:s}/size_mod.F90\n".format(args.tdir))
 
-with Timer("write_rea"):
-  with open(path.join(mypath, "template.rea"), "r") as f:
-    rea_template = f.read()
-  rea = rea_template.format(**config)
-  with open("{:s}/tmp.rea".format(args.tdir), "w") as f:
-    f.write(rea)
+with open(path.join(mypath, "template.rea"), "r") as f:
+  rea_template = f.read()
+rea = rea_template.format(**config)
+with open("{:s}/tmp.rea".format(args.tdir), "w") as f:
+  f.write(rea)
 
 with open(path.join(mypath, "template.box"), "r") as f:
   box_template = f.read()
@@ -192,9 +177,10 @@ from os.path import dirname
 if args.clean:
   cmd = [args.makenek, clean, dirname(args.makenek)]
   call(cmd)
-cmd = [args.makenek, args.name, dirname(args.makenek)]
-if args.tdir == '.':
-  call(cmd)
-else:
-  call(cmd, cwd=args.tdir)
+if args.make:
+  cmd = [args.makenek, args.name, dirname(args.makenek)]
+  if args.tdir == '.':
+    call(cmd)
+  else:
+    call(cmd, cwd=args.tdir)
 
