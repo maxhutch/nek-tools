@@ -95,8 +95,8 @@
    0.
    {nvel:f}         p92 Number of previous velocity solns saved
    {npres:f}        p93 Number of previous pressure solns saved
-   2.00000          p94 start projecting velocity after p94 step
-   2.00000          p95 start projecting pressure after p95 step
+   {wait_vel:f}     p94 start projecting velocity after p94 step
+   {wait_pres:f}    p95 start projecting pressure after p95 step
    0.
    0.
    0.
