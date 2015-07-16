@@ -29,7 +29,7 @@ To start using genrun.py, copy the default.json directory and edit appropriately
 
 ### Specify source directory
 ```
-./genrun.py -d RTI.json -u RTI_f90.tusr -m ~/src/nek/ Rayleigh_Taylor_run1
+./genrun.py -d RTI.json -u RTI_f90.tusr --makenek=/path/to/src/nek/ Rayleigh_Taylor_run1
 ```
 
 ### Override parameters
