@@ -49,6 +49,8 @@ with open("{:s}/{:s}.json".format(args.tdir, args.name), "w") as f:
 # loads the configuration into current variable scope
 locals().update(config)
 
+dealiasing_order = order * 3 / 2
+
 # Manipulate the configuration here
 elements_total = shape_mesh[0] * shape_mesh[1] * shape_mesh[2]
 
@@ -141,7 +143,7 @@ print("Wrote size_mod.F90 to {:s}/size_mod.F90\n".format(args.tdir))
 with open(path.join(mypath, "template.rea"), "r") as f:
   rea_template = f.read()
 rea = rea_template.format(**config)
-with open("{:s}/tmp.rea".format(args.tdir), "w") as f:
+with open("{:s}/{:s}.rea".format(args.tdir, args.name), "w") as f:
   f.write(rea)
 
 with open(path.join(mypath, "template.box"), "r") as f:
@@ -160,16 +162,18 @@ if args.usr != None:
   with open("{:s}/{:s}.usr".format(args.tdir, args.name), "w") as f:
     f.write(usr)
 
-if not args.legacy:
-  shutil.copy("{:s}/tmp.rea".format(args.tdir), "{:s}/{:s}.rea".format(args.tdir, args.name))
-else:
-  system("echo 'tmp.box' | genbox")
-  shutil.copy("box.rea", args.name+".rea")
+if args.legacy:
+  from os import chdir
+  chdir(args.tdir)
+  shutil.copy("./{:s}.rea", "./tmp.rea".format(args.name))
+  system("echo './{:s}.box' | genbox".format(args.name))
+  shutil.copy("./box.rea", "./{:s}.rea".format(args.name))
   #shutil.copy("box.re2", args.name+".re2")
   if not args.map:
     with open(".tmp", "w") as f:
-      f.write(args.name + "\n0.05\n")
+      f.write("{:s}\n0.05\n".format(args.name))
     system("genmap < .tmp")
+  chdir('..')
 
 from subprocess import call
 from os.path import dirname
