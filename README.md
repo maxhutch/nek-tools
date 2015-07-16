@@ -39,8 +39,9 @@ To start using genrun.py, copy the default.json directory and edit appropriately
 
 ## Help
 ```
-usage: genrun.py [-h] [-d CONFIG] [-u USR] [-n NP] [-m] [--makenek MAKENEK]
-                 [-c] [-l] [--tdir TDIR] [--no-make] [--override OVERRIDE]
+usage: genrun.py [-h] [-d CONFIG] [-u USR] [-n NP] [-l] [--map]
+                 [--makenek MAKENEK] [--clean] [--tdir TDIR] [--no-make]
+                 [--override OVERRIDE]
                  name
 
 Generate NEK inputs
@@ -54,11 +55,11 @@ optional arguments:
                         Dictionary of parametesr (JSON)
   -u USR, --usr USR     *.usr file to use for build
   -n NP, --nproc NP     Number of processes to target
-  -m, --map             Map?
+  -l, --legacy          Legacy Nek5000 support (instead of NekBox)
+  --map                 Make a map file. genmap if legacy, internal otherwise.
   --makenek MAKENEK     Path to makenek
-  -c, --clean           Clean?
-  -l, --legacy          Legacy Nek5000
+  --clean               Clean before making
   --tdir TDIR           Directory to build in
-  --no-make             Don't make?
+  --no-make             Don't run makenek
   --override OVERRIDE   JSON overrides
 ```
