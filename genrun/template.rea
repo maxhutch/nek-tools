@@ -102,7 +102,7 @@
    0.
    4.00000          p99   dealiasing: <0--> off/3--> old/4--> new
    0.
-   1.0000           p101   No. of additional filter modes
+   0.0000           p101   No. of additional filter modes
    1.00000          p102   Dump out divergence at each time step
    {filter_wt:f}    p103   weight of stabilizing filter (.01)
             0  SCALAR DATA FOLLOW (CONDUCT; RHOCP)

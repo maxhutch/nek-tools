@@ -4,7 +4,7 @@ module size_m
 
     integer :: ldim, lx1, ly1, lz1
     parameter (ldim={dim})
-    parameter (lx1={order},ly1=lx1,lz1=lx1)
+    parameter (lx1={order:d},ly1=lx1,lz1=lx1)
     integer, parameter :: lxd={dealiasing_order},lyd=lxd,lzd=lxd
     integer, parameter :: lelx=1,lely=1,lelz=1
 
