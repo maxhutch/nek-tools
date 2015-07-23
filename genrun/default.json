@@ -57,6 +57,7 @@
   "io_prec" : 8,
   "no_check" : 0,
   "filter_wt" : 0.05,
+  "nfilt" : 0.0,
   "dt_initial" : 0.0,
   "io_pad" : 23
 }
