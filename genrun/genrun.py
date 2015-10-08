@@ -149,7 +149,7 @@ with open("{:s}/{:s}.rea".format(args.tdir, args.name), "w") as f:
 with open(path.join(mypath, "template.box"), "r") as f:
   box_template = f.read()
 box = box_template.format(**config)
-with open("{:s}/tmp.box".format(args.tdir), "w") as f:
+with open("{:s}/{:s}.box".format(args.tdir, args.name), "w") as f:
   f.write(box)
 
 with open("{:s}/{:s}.map".format(args.tdir, args.name), "w") as f:
@@ -165,7 +165,7 @@ if args.usr != None:
 if args.legacy:
   from os import chdir
   chdir(args.tdir)
-  shutil.copy("./{:s}.rea", "./tmp.rea".format(args.name))
+  shutil.copy("./{:s}.rea".format(args.name), "./tmp.rea".format(args.name))
   system("echo './{:s}.box' | genbox".format(args.name))
   shutil.copy("./box.rea", "./{:s}.rea".format(args.name))
   #shutil.copy("box.re2", args.name+".re2")
@@ -173,7 +173,7 @@ if args.legacy:
     with open(".tmp", "w") as f:
       f.write("{:s}\n0.05\n".format(args.name))
     system("genmap < .tmp")
-  chdir('..')
+  #chdir('..')
 
 from subprocess import call
 from os.path import dirname
