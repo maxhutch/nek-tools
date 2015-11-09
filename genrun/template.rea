@@ -2,32 +2,32 @@
     2.610000     NEKTON VERSION
             3 DIMENSIONAL RUN
           103 PARAMETERS FOLLOW
-   {density}       p1  DENSITY
-   {viscosity}     p2  VISCOS
+   {density:e}       p1  DENSITY
+   {viscosity:e}     p2  VISCOS
    0.
    0.
    0.
    0.
-   {rho_cp}        p7  RHOCP
-   {conductivity}  p8  CONDUCT
+   {rho_cp:e}        p7  RHOCP
+   {conductivity:e}  p8  CONDUCT
    0.
-   {end_time}      p10 FINTIME
+   {end_time:e}      p10 FINTIME
    {num_steps}     p11 NSTEPS
-   {dt}            p12 DT
+   {dt:e}            p12 DT
    0.              p13 IOCOMM
-   {io_time}       p14 IOTIME
-   {io_step}       p15 IOSTEP
+   {io_time:e}       p14 IOTIME
+   {io_step:e}       p15 IOSTEP
    0.              p16 PSSOLVER
    0.
    0.500000E-01    p18 GRID
   -1.00000         p19 INTYPE
    7.0000          p20 NORDER
-   {toldiv}        p21 DIVERGENCE
-   {tolhelm}       p22 HELMHOLTZ
+   {toldiv:e}        p21 DIVERGENCE
+   {tolhelm:e}       p22 HELMHOLTZ
    0               p23 NPSCAL
-   {tolrel}        p24 TOLREL
-   {tolabs}        p25 TOLABS
-   {courant}       p26 COURANT/NTAU
+   {tolrel:e}        p24 TOLREL
+   {tolabs:e}        p25 TOLABS
+   {courant:e}       p26 COURANT/NTAU
    3.00000         p27 TORDER
    0.              p28 TORDER: mesh velocity (0: p28=p27)
    0.              p29 magnetic visc if > 0, = -1/Rm if < 0
@@ -85,7 +85,7 @@
    0.
    0.
    0.
-   {dt_initial:f}   p84 !=0 --> sets initial timestep if p12>0
+   {dt_initial:e}   p84 !=0 --> sets initial timestep if p12>0
    0.               p85 dt ratio if p84 !=0, for timesteps>0
    0.               p86 reserved
    0.
