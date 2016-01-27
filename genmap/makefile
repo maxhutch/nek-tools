@@ -15,4 +15,4 @@ clean:
 	'rm' *.o
 
 genmap.o          : genmap.f		 		;  $(F77) -c $(FLAGS) genmap.f
-byte.o				: ../../nek/byte.c	;  $(CC)  -c $(CFLAGS) ../../nek/byte.c
+byte.o				: byte.c	;  $(CC)  -c $(CFLAGS) byte.c
