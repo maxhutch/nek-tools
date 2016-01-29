@@ -35,6 +35,11 @@
     4, 
     4 
   ], 
+  "alpha": [
+    1.0,
+    1.0,
+    1.0
+  ],
   "end_time": 0, 
   "uservp": 0, 
   "rho_cp": 1000.0,
@@ -59,5 +64,6 @@
   "filter_wt" : 0.05,
   "nfilt" : 0.0,
   "dt_initial" : 0.0,
+  "torder" : 3.0,
   "io_pad" : 23
 }

@@ -28,7 +28,7 @@
    {tolrel:e}        p24 TOLREL
    {tolabs:e}        p25 TOLABS
    {courant:e}       p26 COURANT/NTAU
-   3.00000         p27 TORDER
+   {torder:f}        p27 TORDER
    0.              p28 TORDER: mesh velocity (0: p28=p27)
    0.              p29 magnetic visc if > 0, = -1/Rm if < 0
    {uservp}        p30 > 0 ==> properties set in uservp()
