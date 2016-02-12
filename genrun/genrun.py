@@ -59,33 +59,35 @@ if args.np > 0:
 
 if left_bound == 'P':
   left_boundv = 'P'
-else:
-  left_boundv = 'I'
 
 if right_bound == 'P':
   right_boundv = 'P'
-else:
-  right_boundv = 'I'
 
 if front_bound == 'P':
   front_boundv = 'P'
-else:
-  front_boundv = 'I'
 
 if back_bound == 'P':
   back_boundv = 'P'
-else:
-  back_boundv = 'I'
 
 if top_bound == 'P':
   top_boundv = 'P'
-else:
-  top_boundv = 'I'
 
 if bottom_bound == 'P':
   bottom_boundv = 'P'
-else:
-  bottom_boundv = 'I'
+
+if args.legacy:
+    if left_boundv == 'T':
+        left_boundv = 't'
+    if right_boundv == 'T':
+        right_boundv = 't'
+    if front_boundv == 'T':
+        front_boundv = 't'
+    if back_boundv == 'T':
+        back_boundv = 't'
+    if top_boundv == 'T':
+        top_boundv = 't'
+    if bottom_boundv == 'T':
+        bottom_boundv = 't'
 
 # genbox and genmap
 msh = Mesh(root_mesh, extent_mesh, shape_mesh, [left_bound, front_bound, right_bound, back_bound, top_bound, bottom_bound])
@@ -180,7 +182,7 @@ from os.path import dirname
 #from os import chdir
 #chdir(args.tdir)
 if args.clean:
-  cmd = [args.makenek, clean, dirname(args.makenek)]
+  cmd = [args.makenek, "clean" , dirname(args.makenek)]
   call(cmd)
 if args.make:
   cmd = [args.makenek, args.name, dirname(args.makenek)]

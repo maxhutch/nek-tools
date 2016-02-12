@@ -1,8 +1,11 @@
 {
-  "bottom_bound": "SYM", 
+  "bottom_bound": "W", 
+  "bottom_boundv": "I", 
   "num_fields": 2, 
   "front_bound": "W", 
-  "top_bound": "SYM", 
+  "front_boundv": "I", 
+  "top_bound": "W", 
+  "top_boundv": "I", 
   "conductivity": 1.99e-09, 
   "courant": 0.3, 
   "density": 1000.0, 
@@ -14,7 +17,9 @@
   ], 
   "viscosity": 1e-07, 
   "back_bound": "W", 
+  "back_boundv": "I", 
   "left_bound": "W", 
+  "left_boundv": "I", 
   "root_mesh": [
     0.0, 
     0.0, 
@@ -28,6 +33,7 @@
   ], 
   "dt": 1.0, 
   "right_bound": "W", 
+  "right_boundv": "I", 
   "dim": 3, 
   "io_time": 1.0, 
   "shape_mesh": [
@@ -64,6 +70,7 @@
   "filter_wt" : 0.05,
   "nfilt" : 0.0,
   "dt_initial" : 0.0,
+  "t_boundary" : 0.0,
   "torder" : 3.0,
   "io_pad" : 23
 }

@@ -77,7 +77,7 @@
    0.
    0.              p74 verbose Helmholtz
    {no_check:f}    p75 skip checks?
-   0.
+   {t_boundary:e}  p76 temperature at boundary
    0.
    0.
    0.
