@@ -50,6 +50,7 @@ with open("{:s}/{:s}.json".format(args.tdir, args.name), "w") as f:
 locals().update(config)
 
 dealiasing_order = order * 3 / 2
+ltorder = abs(torder)
 
 # Manipulate the configuration here
 elements_total = shape_mesh[0] * shape_mesh[1] * shape_mesh[2]
@@ -173,7 +174,7 @@ if args.legacy:
   #shutil.copy("box.re2", args.name+".re2")
   if not args.map:
     with open(".tmp", "w") as f:
-      f.write("{:s}\n0.05\n".format(args.name))
+      f.write("{:s}\n0.01\n".format(args.name))
     system("genmap < .tmp")
   #chdir('..')
 

@@ -52,7 +52,7 @@ module size_m
     PARAMETER (LMAXT=LX1*LY1*LZ1*LELT)
     PARAMETER (LMAXP=LX2*LY2*LZ2*LELV)
     PARAMETER (LXZ=LX1*LZ1)
-    PARAMETER (LORDER=3)
+    PARAMETER (LORDER={ltorder})
     PARAMETER (MAXOBJ=4,MAXMBR=LELT*6)
     PARAMETER (lhis=100)         ! # of pts a proc reads from hpts.in
 ! Note: lhis*np > npoints in hpts.in
